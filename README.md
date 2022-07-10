@@ -1,5 +1,9 @@
 # Dolmenwood Map
 
+This is a tool to help navigate the hex descriptions in the exciting new [Dolmenwood campaign setting](https://necroticgnome.com/collections/settings/products/dolmenwood-campaign-book) for [Old School Essentials](https://necroticgnome.com/).
+
+To use it you will need the Referee's Map and Dolmenwood Campaign Book, which you can get by subscribing for the Woodgrue tier at [Necrotic Gnome's Patreon](http://patreon.com/m/4790827/posts).
+
 ## How to use
 1. Download and unzip the repository.
 2. Get a copy of the map and campaign book from [Necrotic Gnome's Patreon](http://patreon.com/m/4790827/posts).
