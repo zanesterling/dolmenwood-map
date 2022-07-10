@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<head></head>
+<body>
+<canvas id="interaction-canvas"></canvas>
+
+<style>
+    #interaction-canvas {
+        background-image: url("79 - Dolmenwood Referee's Map.png");
+        background-size: 100% 100%;
+        width: 100%;
+        height: 100%;
+    }
+</style>
+
+<script>
+    var canvas = document.getElementById('interaction-canvas');
+    var ctx = canvas.getContext('2d');
+
+    var OFFSET_X = 0;
+    var OFFSET_Y = 0;
+    var HEX_HEIGHT = 0;
+    var COL_H = 0;
+    var ROW_W = 0;
+
+    // Each elt is a column array holding individual hexes.
+    const HEXES = [
+        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+        [1, 2, 3, 4, 5, 6, 7, 8, 9],
+        [1, 2, 3, 4, 5, 6, 7, 8],
+        [1, 2, 3, 4, 5, 6, 7],
+        [1, 2, 3, 4, 5, 6],
+        [1, 2, 3, 4, 5, 6],
+    ];
+    var hexLocations;
+
+    function recalcConstants() {
+        HEX_HEIGHT = (canvas.height * 0.89) / 12;
+        HEX_WIDTH = (canvas.width * 0.96) / 21; // Offset to next col's hex center.
+        OFFSET_X = HEX_WIDTH;
+        OFFSET_Y = HEX_HEIGHT / 2;
+        COL_H = HEX_HEIGHT;
+        ROW_W = HEX_WIDTH;
+    }
+    recalcConstants();
+
+    function recalcHexLocations() {
+        hexLocations = [];
+        for (var i = 1; i <= HEXES.length; i++) {
+            const col = HEXES[i-1];
+            for (var j = 1; j <= col.length; j++) {
+                const hex = col[j-1];
+                hexLocations.push({
+                    x: OFFSET_X + ROW_W*i,
+                    y: OFFSET_Y - (i%2)*HEX_HEIGHT/2 + COL_H*j,
+                });
+            }
+        }
+    }
+
+    function drawCanvasDots() {
+        ctx.fillStyle = "rgb(0,0,0)";
+        const DOT_RAD = 2;
+        hexLocations.forEach((dot) =>
+            ctx.fillRect(dot.x-DOT_RAD, dot.y-DOT_RAD, DOT_RAD*2, DOT_RAD*2));
+    }
+
+    function onResize() {
+        ctx.canvas.width = window.innerWidth;
+        ctx.canvas.height = window.innerHeight;
+        recalcConstants();
+        recalcHexLocations();
+        drawCanvasDots();
+    }
+    onResize();
+
+    function onClick(e) {
+        console.log('clicked');
+        event = e;
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        drawCanvasDots();
+        var closestHex = {};
+        var closestDist = Infinity;
+        hexLocations.forEach(({x, y}) => {
+            const dist = (x-e.x)**2 + (y-e.y)**2;
+            if (dist < closestDist) {
+                closestDist = dist;
+                closestHex = {x,y};
+            }
+        });
+        strokeHex(closestHex);
+    }
+
+    function strokeHex(hex) {
+        const rad = HEX_WIDTH / 2;
+        const rad2 = rad * 0.5;
+        ctx.strokeStyle = "rgb(255,255,0)";
+        ctx.beginPath(hex.x - rad, hex.y);
+        ctx.lineTo(hex.x - rad2, hex.y - HEX_HEIGHT/2);
+        ctx.lineTo(hex.x + rad2, hex.y - HEX_HEIGHT/2);
+        ctx.lineTo(hex.x + rad, hex.y);
+        ctx.lineTo(hex.x + rad2, hex.y + HEX_HEIGHT/2);
+        ctx.lineTo(hex.x - rad2, hex.y + HEX_HEIGHT/2);
+        ctx.stroke();
+    }
+
+    window.addEventListener('resize', onResize);
+    canvas.addEventListener('click', onClick);
+</script>
+</body>
