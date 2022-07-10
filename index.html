@@ -2,19 +2,40 @@
 <head></head>
 <body>
 <canvas id="interaction-canvas"></canvas>
+<object id="pdf-viewer" data="Dolmenwood Campaign Book 2022-06-28.pdf#toolbar=0&navpanes=0&scrollbar=0" type="application/pdf">
+  <p>Alternative text - file is broken</p>
+</object>
 
 <style>
+    body {height: 100%;}
     #interaction-canvas {
         background-image: url("79 - Dolmenwood Referee's Map.png");
         background-size: 100% 100%;
-        width: 100%;
+        float: left;
+        width: 60%;
         height: 100%;
+    }
+    #pdf-viewer {
+        float:right;
+        width: 40%;
     }
 </style>
 
 <script>
-    var canvas = document.getElementById('interaction-canvas');
-    var ctx = canvas.getContext('2d');
+    const CANVAS_SCREEN_FRACTION = 0.6;
+
+    var pdfViewer = document.getElementById('pdf-viewer');
+    const RAW_PDF_PATH = pdfViewer.data;
+
+    function gotoHexPage(hexIndex) { gotoPage(172 + hexIndex); }
+    function gotoPage(pageNum) {
+        pdfViewer.outerHTML = "<object id=\"pdf-viewer\" data=\"Dolmenwood Campaign Book 2022-06-28.pdf#toolbar=0&navpanes=0&scrollbar=0&page="+pageNum+"\" type=\"application/pdf\"></object>";
+        pdfViewer = document.getElementById('pdf-viewer');
+        pdfViewer.style.height = ctx.canvas.height - 10 + "px";
+    }
+
+    const canvas = document.getElementById('interaction-canvas');
+    const ctx = canvas.getContext('2d');
 
     var OFFSET_X = 0;
     var OFFSET_Y = 0;
@@ -54,7 +75,6 @@
         COL_H = HEX_HEIGHT;
         ROW_W = HEX_WIDTH;
     }
-    recalcConstants();
 
     function recalcHexLocations() {
         hexLocations = [];
@@ -78,11 +98,12 @@
     }
 
     function onResize() {
-        ctx.canvas.width = window.innerWidth;
+        ctx.canvas.width = window.innerWidth * CANVAS_SCREEN_FRACTION;
         ctx.canvas.height = window.innerHeight;
+        pdfViewer.style.height = ctx.canvas.height - 10 + "px";
         recalcConstants();
         recalcHexLocations();
-        drawCanvasDots();
+        // drawCanvasDots();
         if (selectedHexIndex >= 0) strokeHex(hexLocations[selectedHexIndex]);
     }
 
@@ -90,7 +111,7 @@
     function onClick(e) {
         event = e;
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-        drawCanvasDots();
+        // drawCanvasDots();
         var closestHex = {};
         var closestHexIndex = -1;
         var closestDist = Infinity;
@@ -104,6 +125,7 @@
         });
         selectedHexIndex = closestHexIndex;
         strokeHex(closestHex);
+        gotoHexPage(selectedHexIndex);
     }
 
     const R32 = Math.sqrt(3) / 2;
@@ -111,6 +133,7 @@
         const rad = HEX_WIDTH / 2 * 1.3;
         const rad2 = rad * 0.5;
         ctx.strokeStyle = "rgb(255,255,0)";
+        ctx.lineWidth = 3;
         ctx.beginPath();
         ctx.moveTo(hex.x - rad, hex.y);
         ctx.lineTo(hex.x - rad2, hex.y - HEX_HEIGHT/2);
@@ -120,6 +143,16 @@
         ctx.lineTo(hex.x - rad2, hex.y + HEX_HEIGHT/2);
         ctx.closePath();
         ctx.stroke();
+    }
+
+    function getHexCoordsFromIndex(index) {
+        for(var i = 1; i <= HEXES.length; i++) {
+            if (index < HEXES[i-1].length) {
+                return {col: i, row: index+1};
+            }
+            index -= HEXES[i-1].length;
+        }
+        throw new Exception("wtfbbq, index too big: " + index);
     }
 
     window.addEventListener('resize', onResize);
