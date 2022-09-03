@@ -2,7 +2,7 @@
 <head></head>
 <body>
 <canvas id="interaction-canvas"></canvas>
-<object id="pdf-viewer" data="Dolmenwood Campaign Book 2022-07-26.pdf#toolbar=0&navpanes=0&scrollbar=0" type="application/pdf">
+<object id="pdf-viewer" data="Dolmenwood Campaign Book 2022-08-29.pdf#toolbar=0&navpanes=0&scrollbar=0" type="application/pdf">
   <p>Alternative text - file is broken</p>
 </object>
 
@@ -30,7 +30,7 @@
 
     function gotoHexPage(hexIndex) { gotoPage(HEX_DESC_START_PAGE + hexIndex); }
     function gotoPage(pageNum) {
-        pdfViewer.outerHTML = "<object id=\"pdf-viewer\" data=\"Dolmenwood Campaign Book 2022-07-26.pdf#toolbar=0&navpanes=0&scrollbar=0&page="+pageNum+"\" type=\"application/pdf\"></object>";
+        pdfViewer.outerHTML = "<object id=\"pdf-viewer\" data=\"Dolmenwood Campaign Book 2022-08-29.pdf#toolbar=0&navpanes=0&scrollbar=0&page="+pageNum+"\" type=\"application/pdf\"></object>";
         pdfViewer = document.getElementById('pdf-viewer');
         pdfViewer.style.height = ctx.canvas.height - 10 + "px";
     }
